@@ -89,6 +89,64 @@ namespace rocket{
         timespec ts;
 
         memset(&ts, 0, sizeof(ts));
+        ts.tv_sec=interval/1000;
+        ts.tv_nsec=(interval%1000)*1000000;
+
+        itimerspec value;
+        memset(&value,0,sizeof(value));
+        value.it_value = ts;
+
+        int rt = timerfd_settime(m_fd, 0, &value, NULL);
+        if (rt != 0) {
+            ERRORLOG("timerfd_settime error, errno=%d, error=%s", errno, strerror(errno));
+        }
+        DEBUGLOG("timer reset to %lld", now + interval);        
+    }
+
+    
+void Timer::addTimerEvent(TimerEvent::s_ptr event) {
+  bool is_reset_timerfd = false;
+
+  ScopeMutex<Mutex> lock(m_mutex);
+  if (m_pending_events.empty()) {
+    is_reset_timerfd = true;
+  } else {
+    auto it = m_pending_events.begin();
+    if ((*it).second->getArriveTime() > event->getArriveTime()) {
+      is_reset_timerfd = true;
+    }
+  }
+  m_pending_events.emplace(event->getArriveTime(), event);
+  lock.unlock();
+
+  if (is_reset_timerfd) {
+    resetArriveTime();
+  }
+
+
+}
+
+    void Timer::deleteTimerEvent(TimerEvent::s_ptr event) {
+    event->setCancled(true);
+
+    ScopeMutex<Mutex> lock(m_mutex);
+
+    auto begin = m_pending_events.lower_bound(event->getArriveTime());
+    auto end = m_pending_events.upper_bound(event->getArriveTime());
+
+    auto it = begin;
+    for (it = begin; it != end; ++it) {
+        if (it->second == event) {
+        break;
+        }
+    }
+
+    if (it != end) {
+        m_pending_events.erase(it);
+    }
+    lock.unlock();
+
+    DEBUGLOG("success delete TimerEvent at arrive time %lld", event->getArriveTime());
 
     }
 }

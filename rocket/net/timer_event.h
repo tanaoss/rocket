@@ -16,7 +16,7 @@ class TimerEvent{
             return m_arrive_time;
         }
 
-        void setCancel(bool value){
+        void setCancled(bool value){
             m_is_cancled = value;
         }
 
