@@ -47,7 +47,7 @@ private:
 private:
     pid_t m_thread_id {0};
 
-    int m_epool_fd {0};
+    int m_epoll_fd {0};
 
     int m_wakeup_fd {0};
 
