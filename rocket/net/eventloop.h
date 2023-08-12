@@ -35,7 +35,7 @@ public:
 
     bool isLooping();
 
-    static EventLoop* GetCurrentEventLopop();
+    static EventLoop* GetCurrentEventLoop();
 
 private:
     void dealWakeup();

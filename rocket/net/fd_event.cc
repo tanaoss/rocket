@@ -33,6 +33,7 @@ namespace rocket{
             m_listen_event.events |= EPOLLOUT;
             m_wirte_callback = callback;
         }
+         m_listen_event.data.ptr = this;
     }
 
     void FdEvent::setNonBlock(){

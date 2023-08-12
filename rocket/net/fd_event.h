@@ -29,7 +29,10 @@ namespace rocket
             int getFd() const{
                 return m_fd;
             }
-
+            
+            epoll_event getEpollEvent() {
+                return m_listen_event;
+            }
         protected:
             int m_fd{-1};
 
