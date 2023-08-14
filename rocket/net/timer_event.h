@@ -32,7 +32,7 @@ class TimerEvent{
             return m_task;
         }
 
-        void TimerEvent::resetArriveTime();
+        void resetArriveTime();
     private:
         int64_t m_arrive_time;
         int64_t m_interval;

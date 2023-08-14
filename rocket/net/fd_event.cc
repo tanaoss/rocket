@@ -33,6 +33,7 @@ namespace rocket{
             m_listen_event.events |= EPOLLOUT;
             m_wirte_callback = callback;
         }
+         m_listen_event.data.ptr = this;
     }
 
     void FdEvent::setNonBlock(){
@@ -44,5 +45,12 @@ namespace rocket{
 
         fcntl(m_fd,F_SETFL, flag | O_NONBLOCK);
         return ;
+    }
+    void FdEvent::cancle(TriggerEvent event_type) {
+        if (event_type == TriggerEvent::IN_EVENT) {
+            m_listen_event.events &= (~EPOLLIN);
+        } else {
+            m_listen_event.events &= (~EPOLLOUT);
+        }
     }
 }
